@@ -151,9 +151,4 @@ curl -v -X POST "http://localhost:8080/transfers?jwt={jwtoken}" -H "accept: appl
 
 
 
-## TODO
-
-* currency at Account entity 
-* Transaction log (RequestID)
-* Make idempotent all POST request to the API
-* repository pattern, in the future implement sql db store
+Carlos García de Marina Vilar - garciademarina(at)gmail.com
