@@ -76,15 +76,15 @@ func (h *AccountHandler) GetBalance(logger *log.Logger) http.HandlerFunc {
 
 // TransferMoneyPost represents json post data
 type TransferMoneyPost struct {
-	UserDestination string
-	Amount          int64
+	DestinationUser string `json:"destination_user"`
+	Amount          int64  `json:"amount"`
 }
 
 // TransferMoneyPostAdmin represents json post data with user origin id
 type TransferMoneyPostAdmin struct {
-	UserOrigin      string
-	UserDestination string
-	Amount          int64
+	OriginUser      string `json:"origin_user"`
+	DestinationUser string `json:"destination_user"`
+	Amount          int64  `json:"amount"`
 }
 
 // TransferMoneyResponse represents /transfers POST response
@@ -105,15 +105,15 @@ func (h *AccountHandler) TransferMoneyAdmin(logger *log.Logger) http.HandlerFunc
 			return
 		}
 
-		err = h.repo.TransferMoney(r.Context(), transfer.UserOrigin, transfer.UserDestination, transfer.Amount)
+		err = h.repo.TransferMoney(r.Context(), transfer.OriginUser, transfer.DestinationUser, transfer.Amount)
 		if err != nil {
 			handlerTransferError(w, err)
 			return
 		}
 
 		respondwithJSON(w, http.StatusOK, &TransferMoneyResponse{
-			OriginUser:      transfer.UserOrigin,
-			DestinationUser: transfer.UserDestination,
+			OriginUser:      transfer.OriginUser,
+			DestinationUser: transfer.DestinationUser,
 			Amount:          transfer.Amount,
 		})
 	}
@@ -137,7 +137,7 @@ func (h *AccountHandler) TransferMoney(logger *log.Logger) http.HandlerFunc {
 			return
 		}
 
-		err = h.repo.TransferMoney(r.Context(), userOrigin, transfer.UserDestination, transfer.Amount)
+		err = h.repo.TransferMoney(r.Context(), userOrigin, transfer.DestinationUser, transfer.Amount)
 		if err != nil {
 			handlerTransferError(w, err)
 			return
@@ -145,7 +145,7 @@ func (h *AccountHandler) TransferMoney(logger *log.Logger) http.HandlerFunc {
 
 		respondwithJSON(w, http.StatusOK, &TransferMoneyResponse{
 			OriginUser:      userOrigin,
-			DestinationUser: transfer.UserDestination,
+			DestinationUser: transfer.DestinationUser,
 			Amount:          transfer.Amount,
 		})
 	}
@@ -177,8 +177,8 @@ func decodeTransferMoney(r *http.Request, transfer *TransferMoneyPost) error {
 		return errors.New("Cannot decode TransformMoneyPost from body")
 	}
 
-	if transfer.UserDestination == "" {
-		return errors.New("UserDestination field not found")
+	if transfer.DestinationUser == "" {
+		return errors.New("DestinationUser field not found")
 	}
 	return nil
 }
@@ -192,11 +192,11 @@ func decodeTransferMoneyAdmin(r *http.Request, transfer *TransferMoneyPostAdmin)
 		return errors.New("Cannot decode TransferMoneyPostAdmin from body")
 	}
 
-	if transfer.UserOrigin == "" {
-		return errors.New("UserOrigin field cannot be found")
+	if transfer.OriginUser == "" {
+		return errors.New("OriginUser field cannot be found")
 	}
-	if transfer.UserDestination == "" {
-		return errors.New("UserDestination field cannot be found")
+	if transfer.DestinationUser == "" {
+		return errors.New("DestinationUser field cannot be found")
 	}
 	return nil
 }

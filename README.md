@@ -25,6 +25,15 @@ requires Go 1.12 or later.
 go get -u github.com/garciademarina/verse
 ```
 
+## Examples
+```bash
+curl -v -X POST "http://localhost:8080/admin/transfers?key=admin" -H "accept: application/json;" -d "{ \"origin_user\": \"01D3XZ3ZHCP3KG9VT4FGAD8KDR\", \"destination_user\": \"01D3XZ7CN92AKS9HAPSZ4D5DP9\", \"Amount\": 400}" -H "Content-Type: application/json;"
+```
+
+```bash
+curl -v -X POST "http://localhost:8080/transfers?jwt={jwtoken}" -H "accept: application/json;" -d "{ \"destination_user\": \"01D3XZ7CN92AKS9HAPSZ4D5DP9\", \"Amount\": 400}" -H "Content-Type: application/json;"
+```
+
 ## Notes
 The API can be used as admin or as regular user. 
 
@@ -71,14 +80,22 @@ Get the current balance of a given user. {userID}
 Make a transfer of money between two users.
 
 **Arguments**
-- Amount (required) A positive integer representing how much money to transfer
-- UserOrigin (required) A string ID of a user to withdraw the money 
-- UserDestination (required) A string ID of a user to send the money
+- origin_user (required) A string ID of a user to withdraw the money 
+- destination_user (required) A string ID of a user to send the money
+- amount (required) A positive integer representing how much money to transfer
 
 **Response**
-- OriginUser (string) A string ID of a user to withdraw the money 
-- DestinationUser (string) A string ID of a user to send the money
-- Amount (int64) The amount of money transfered
+- origin_user (string) A string ID of a user to withdraw the money 
+- destination_user (string) A string ID of a user to send the money
+- amount (int64) The amount of money transfered
+
+```json
+{
+    origin_user: "01D3XZ7CN92AKS9HAPSZ4D5DP9",
+    destination_user: "01D3XZ3ZHCP3KG9VT4FGAD8KDR",
+    amount: 90
+}
+```
 
 #### GET /admin/accounts
 Get all accounts.
@@ -127,14 +144,22 @@ Get the current balance of the user.
 Make a transfer of money between two users.
 
 **Arguments**
-- Amount (required) A positive integer representing how much money to transfer
-- UserOrigin (required) A string ID of a user to withdraw the money 
-- UserDestination (required) A string ID of a user to send the money
+- origin_user (required) A string ID of a user to withdraw the money 
+- destination_user (required) A string ID of a user to send the money
+- amount (required) A positive integer representing how much money to transfer
 
 **Response**
-- OriginUser (string) A string ID of a user to withdraw the money 
-- DestinationUser (string) A string ID of a user to send the money
-- Amount (int64) The amount of money transfered
+- origin_user (string) A string ID of a user to withdraw the money 
+- destination_user (string) A string ID of a user to send the money
+- amount (int64) The amount of money transfered
+
+```json
+{
+    origin_user: "01D3XZ7CN92AKS9HAPSZ4D5DP9",
+    destination_user: "01D3XZ3ZHCP3KG9VT4FGAD8KDR",
+    amount: 90
+}
+```
 
 
 #### GET /user
@@ -159,10 +184,7 @@ The user information.
 
 
 
-Example: 
-```
-curl -v -X POST "http://localhost:8080/transfers?jwt={jwtoken}" -H "accept: application/json;" -d "{ \"UserDestination\": \"01D3XZ7CN92AKS9HAPSZ4D5DP9\", \"Amount\": 400}" -H "Content-Type: application/json;"
-```
+
 
 
 

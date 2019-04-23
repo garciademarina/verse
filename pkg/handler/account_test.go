@@ -86,7 +86,7 @@ func TestAdminTransfer(t *testing.T) {
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 
-	payload := ` { "UserOrigin": "01D3XZ3ZHCP3KG9VT4FGAD8KDR", "UserDestination": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 1040 }`
+	payload := ` { "origin_user": "01D3XZ3ZHCP3KG9VT4FGAD8KDR", "destination_user": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 1040 }`
 	expected := `{"origin_user":"01D3XZ3ZHCP3KG9VT4FGAD8KDR","destination_user":"01D3XZ7CN92AKS9HAPSZ4D5DP9","amount":1040}`
 	if status, resp := testRequest(t, ts, "POST", "/admin/transfers?key=admin", nil, strings.NewReader(payload)); status != 200 || resp != expected {
 		t.Fatalf("%v\n", resp)
@@ -110,7 +110,7 @@ func TestAdminTransferBalanceInsufficient(t *testing.T) {
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 
-	payload := ` { "UserOrigin": "01D3XZ3ZHCP3KG9VT4FGAD8KDR", "UserDestination": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 9990000 }`
+	payload := ` { "origin_user": "01D3XZ3ZHCP3KG9VT4FGAD8KDR", "destination_user": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 9990000 }`
 	expected := `{"type":"api_error","code":"balance_insufficient","message":""}`
 	if status, resp := testRequest(t, ts, "POST", "/admin/transfers?key=admin", nil, strings.NewReader(payload)); status != 400 || resp != expected {
 		t.Fatalf("%v\n", resp)
@@ -167,7 +167,7 @@ func TestTransferOriginAccountNotFound(t *testing.T) {
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 
-	payload := ` { "UserDestination": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 99 }`
+	payload := ` { "destination_user": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 99 }`
 	expected := `{"type":"api_error","code":"account_not_found","message":""}`
 	if status, resp := testRequest(t, ts, "POST", "/transfers", newAuthHeader(jwt.MapClaims{"user_id": "not-exist"}), strings.NewReader(payload)); status != 400 || resp != expected {
 		t.Fatalf("%v\n", resp)
@@ -186,7 +186,7 @@ func TestTransferDestinationAccountNotFound(t *testing.T) {
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 
-	payload := ` { "UserDestination": "not-found", "Amount": 99 }`
+	payload := ` { "destination_user": "not-found", "Amount": 99 }`
 	expected := `{"type":"api_error","code":"destination_account_not_found","message":""}`
 	if status, resp := testRequest(t, ts, "POST", "/transfers", newAuthHeader(jwt.MapClaims{"user_id": "01D3XZ3ZHCP3KG9VT4FGAD8KDR"}), strings.NewReader(payload)); status != 400 || resp != expected {
 		t.Fatalf("%v\n", resp)
@@ -205,7 +205,7 @@ func TestTransferNotUserIdInJwt(t *testing.T) {
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 
-	payload := ` { "UserDestination": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 9990000 }`
+	payload := ` { "destination_user": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 9990000 }`
 	expected := `{"type":"api_error","code":"jwt_user_id_not_found","message":""}`
 	if status, resp := testRequest(t, ts, "POST", "/transfers", newAuthHeader(jwt.MapClaims{"no_valid_user_id": "01D3XZ3ZHCP3KG9VT4FGAD8KDR"}), strings.NewReader(payload)); status != 400 || resp != expected {
 		t.Fatalf("%v\n", resp)
@@ -250,7 +250,7 @@ func TestTransfer(t *testing.T) {
 		t.Fatalf("%s\n", resp)
 	}
 
-	payload := ` { "UserDestination": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 1040 }`
+	payload := ` { "destination_user": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 1040 }`
 	expected := `{"origin_user":"01D3XZ3ZHCP3KG9VT4FGAD8KDR","destination_user":"01D3XZ7CN92AKS9HAPSZ4D5DP9","amount":1040}`
 	if status, resp := testRequest(t, ts, "POST", "/transfer", newAuthHeader(jwt.MapClaims{"user_id": "01D3XZ3ZHCP3KG9VT4FGAD8KDR"}), strings.NewReader(payload)); status != 200 || resp != expected {
 		t.Fatalf("%v\n", resp)

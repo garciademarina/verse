@@ -95,7 +95,7 @@ func registerRoutes(r chi.Router, config Config, logger *log.Logger) {
 
 		r.Get("/admin/accounts", accountHandler.ListAll(logger))
 		r.Get("/admin/balance/{userID}", accountHandler.GetBalanceById(logger))
-		r.Post("/admin/transfers", accountHandler.TransferMoney(logger))
+		r.Post("/admin/transfers", accountHandler.TransferMoneyAdmin(logger))
 
 	})
 }
