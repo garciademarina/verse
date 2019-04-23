@@ -33,7 +33,7 @@ Message (string) A string representation for the error
 
 * required url parameter ?key=foobar
 
-####GET /admin/balance/{userID}
+#### GET /admin/balance/{userID}
 Get the current balance of a given user. {userID}
 **Arguments**
 userID (required) A string ID of a user to get the balance
@@ -49,7 +49,7 @@ Amount (int64)
 }
 ```
 
-####POST /admin/transfers 
+#### POST /admin/transfers 
 Make a transfer of money between two users.
 **Arguments**
 Amount (required) A positive integer representing how much money to transfer
@@ -60,7 +60,7 @@ OriginUser (string) A string ID of a user to withdraw the money
 DestinationUser (string) A string ID of a user to send the money
 Amount (int64) The amount of money transfered
 
-####GET /admin/accounts
+#### GET /admin/accounts
 Get all accounts.
 **Response**
 A list of all accounts.
@@ -88,7 +88,7 @@ A list of all accounts.
 
 ## User endpoints
 
-####GET /balance 
+#### GET /balance 
 Get the current balance of the user.
 **Response**
 num (string) A string ID of a user to withdraw the money 
@@ -106,7 +106,7 @@ Amount (int64)
 
 
 
-####POST /transfers 
+#### POST /transfers 
 Make a transfer of money between two users.
 **Arguments**
 Amount (required) A positive integer representing how much money to transfer
@@ -122,7 +122,7 @@ Amount (int64) The amount of money transfered
 
 
 
-####GET /user
+#### GET /user
 Get user information.
 **Response**
 The user information.
@@ -143,10 +143,10 @@ The user information.
 
 
 
-    Example: 
-    ```
-    curl -v -X POST "http://localhost:8080/transfers?jwt={jwtoken}" -H "accept: application/json;" -d "{ \"UserDestination\": \"01D3XZ7CN92AKS9HAPSZ4D5DP9\", \"Amount\": 400}" -H "Content-Type: application/json;"
-    ```
+Example: 
+```
+curl -v -X POST "http://localhost:8080/transfers?jwt={jwtoken}" -H "accept: application/json;" -d "{ \"UserDestination\": \"01D3XZ7CN92AKS9HAPSZ4D5DP9\", \"Amount\": 400}" -H "Content-Type: application/json;"
+```
 
 
 
