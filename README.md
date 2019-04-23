@@ -1,5 +1,5 @@
 Carlos García de Marina Vilar
-garciademarina(at)gmail.com
+garciademarina@gmail.com
 
 # verse test
 
