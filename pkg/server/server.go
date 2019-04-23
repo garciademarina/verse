@@ -11,8 +11,10 @@ import (
 	"github.com/go-chi/jwtauth"
 
 	sample "github.com/garciademarina/verse/cmd/sample-data"
+	account "github.com/garciademarina/verse/pkg/account/inmem"
 	"github.com/garciademarina/verse/pkg/handler"
-	"github.com/garciademarina/verse/pkg/repository"
+	puser "github.com/garciademarina/verse/pkg/user"
+	user "github.com/garciademarina/verse/pkg/user/inmem"
 )
 
 // Server serves http requests.
@@ -64,11 +66,11 @@ func registerRoutes(r chi.Router, config Config, logger *log.Logger) {
 	r.Use(middleware.RequestID)
 
 	users := sample.Users
-	repoUsers := repository.NewInmemUserRepo(users)
+	repoUsers := user.NewInmemoryRepository(users)
 	userHandler := handler.NewUserHandler(repoUsers)
 
 	accounts := sample.Accounts
-	repoAccounts := repository.NewInmemAccountRepo(accounts)
+	repoAccounts := account.NewInmemoryRepository(accounts)
 	accountHandler := handler.NewAccountHandler(repoAccounts)
 
 	// Protected routes
@@ -116,7 +118,7 @@ func AuthenticatorAdmin(key string) func(next http.Handler) http.Handler {
 	}
 }
 
-func authenticator(userRepo repository.UserRepo) func(next http.Handler) http.Handler {
+func authenticator(userRepo puser.Repository) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			token, _, err := jwtauth.FromContext(r.Context())

@@ -8,7 +8,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	sample "github.com/garciademarina/verse/cmd/sample-data"
-	"github.com/garciademarina/verse/pkg/repository"
+	user "github.com/garciademarina/verse/pkg/user/inmem"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/jwtauth"
 )
@@ -21,7 +21,7 @@ func init() {
 func TestFindById(t *testing.T) {
 
 	users := sample.Users
-	repoUsers := repository.NewInmemUserRepo(users)
+	repoUsers := user.NewInmemoryRepository(users)
 	userHandler := NewUserHandler(repoUsers)
 	handler := userHandler.FindById(logger)
 

@@ -10,7 +10,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	sample "github.com/garciademarina/verse/cmd/sample-data"
-	"github.com/garciademarina/verse/pkg/models"
+	"github.com/garciademarina/verse/pkg/account"
 	"github.com/go-chi/jwtauth"
 )
 
@@ -64,14 +64,13 @@ func newJwtToken(secret []byte, claims ...jwt.MapClaims) string {
 func newAuthHeader(claims ...jwt.MapClaims) http.Header {
 	h := http.Header{}
 	h.Set("Authorization", "BEARER "+newJwtToken(TokenSecret, claims...))
-	// fmt.Printf("%s\n", newJwtToken(TokenSecret, claims...))
 	return h
 }
 
-func getSampleAccounts() map[string]*models.Account {
-	accounts := make(map[string]*models.Account)
+func getSampleAccounts() map[string]*account.Account {
+	accounts := make(map[string]*account.Account)
 	for k2, v2 := range sample.Accounts {
-		accounts[k2] = &models.Account{
+		accounts[k2] = &account.Account{
 			Num:     v2.Num,
 			UserID:  v2.UserID,
 			Name:    v2.Name,

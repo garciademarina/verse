@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/garciademarina/verse/pkg/repository"
+	account "github.com/garciademarina/verse/pkg/account/inmem"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/jwtauth"
 )
@@ -19,7 +19,7 @@ func init() {
 }
 
 func TestListAll(t *testing.T) {
-	repoAccount := repository.NewInmemAccountRepo(getSampleAccounts())
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
 	accountHandler := NewAccountHandler(repoAccount)
 	handler := accountHandler.ListAll(logger)
 
@@ -37,7 +37,7 @@ func TestListAll(t *testing.T) {
 
 }
 func TestAdminGetBalance(t *testing.T) {
-	repoAccount := repository.NewInmemAccountRepo(getSampleAccounts())
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
 	accountHandler := NewAccountHandler(repoAccount)
 	handler := accountHandler.GetBalanceById(logger)
 
@@ -55,7 +55,7 @@ func TestAdminGetBalance(t *testing.T) {
 
 func TestBalance(t *testing.T) {
 
-	repoAccount := repository.NewInmemAccountRepo(getSampleAccounts())
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
 	accountHandler := NewAccountHandler(repoAccount)
 	handler := accountHandler.GetBalance(logger)
 
@@ -74,7 +74,7 @@ func TestBalance(t *testing.T) {
 
 func TestAdminTransfer(t *testing.T) {
 
-	repoAccount := repository.NewInmemAccountRepo(getSampleAccounts())
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
 	accountHandler := NewAccountHandler(repoAccount)
 	handler := accountHandler.TransferMoneyAdmin(logger)
 	handlerBalance := accountHandler.GetBalanceById(logger)
@@ -100,7 +100,7 @@ func TestAdminTransfer(t *testing.T) {
 }
 func TestAdminTransferBalanceInsufficient(t *testing.T) {
 
-	repoAccount := repository.NewInmemAccountRepo(getSampleAccounts())
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
 	accountHandler := NewAccountHandler(repoAccount)
 	handler := accountHandler.TransferMoneyAdmin(logger)
 
@@ -118,7 +118,7 @@ func TestAdminTransferBalanceInsufficient(t *testing.T) {
 }
 func TestTransferNotUserIdInJwt(t *testing.T) {
 
-	repoAccount := repository.NewInmemAccountRepo(getSampleAccounts())
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
 	accountHandler := NewAccountHandler(repoAccount)
 	handler := accountHandler.TransferMoney(logger)
 
@@ -138,7 +138,7 @@ func TestTransferNotUserIdInJwt(t *testing.T) {
 
 func TestTransfer(t *testing.T) {
 
-	repoAccount := repository.NewInmemAccountRepo(getSampleAccounts())
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
 	accountHandler := NewAccountHandler(repoAccount)
 	handler := accountHandler.TransferMoney(logger)
 	handlerBalance := accountHandler.GetBalance(logger)

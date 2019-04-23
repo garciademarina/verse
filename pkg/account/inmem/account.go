@@ -1,35 +1,33 @@
-package repository
+package account
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sort"
 	"sync"
 
-	models "github.com/garciademarina/verse/pkg/models"
+	"github.com/garciademarina/verse/pkg/account"
 )
 
-type inmemAccountRepo struct {
+type inmemRepository struct {
 	mtx      sync.RWMutex
-	accounts map[string]*models.Account
+	accounts map[string]*account.Account
 }
 
-// NewInmemAccountRepo returns implement of account repository interface
-func NewInmemAccountRepo(accounts map[string]*models.Account) AccountRepo {
+// NewInmemoryRepository returns implement of user repository interface
+func NewInmemoryRepository(accounts map[string]*account.Account) account.Repository {
 	if accounts == nil {
-		accounts = make(map[string]*models.Account)
+		accounts = make(map[string]*account.Account)
 	}
 
-	return &inmemAccountRepo{
+	return &inmemRepository{
 		accounts: accounts,
 	}
 }
-
-func (m *inmemAccountRepo) ListAll(ctx context.Context) ([]*models.Account, error) {
+func (m *inmemRepository) ListAll(ctx context.Context) ([]*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
-	values := make([]*models.Account, 0, len(m.accounts))
+	values := make([]*account.Account, 0, len(m.accounts))
 	for _, value := range m.accounts {
 		values = append(values, value)
 	}
@@ -41,7 +39,7 @@ func (m *inmemAccountRepo) ListAll(ctx context.Context) ([]*models.Account, erro
 	}
 	sort.Strings(sortedKeys)
 
-	accounts := make([]*models.Account, 0, len(m.accounts))
+	accounts := make([]*account.Account, 0, len(m.accounts))
 	for _, v := range sortedKeys {
 		// fmt.Printf("k: %s, v: %v\n", k, myRecords[k])
 		accounts = append(accounts, m.accounts[v])
@@ -50,7 +48,7 @@ func (m *inmemAccountRepo) ListAll(ctx context.Context) ([]*models.Account, erro
 	return accounts, nil
 }
 
-func (m *inmemAccountRepo) FindByID(ctx context.Context, num string) (*models.Account, error) {
+func (m *inmemRepository) FindByID(ctx context.Context, num string) (*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -61,21 +59,12 @@ func (m *inmemAccountRepo) FindByID(ctx context.Context, num string) (*models.Ac
 	return nil, fmt.Errorf("Account number %s not found", num)
 }
 
-var (
-	// ErrOriginAccountNotFound ..
-	ErrOriginAccountNotFound = errors.New("Origin Account not found")
-	// ErrDestinationAccountNotFound ..
-	ErrDestinationAccountNotFound = errors.New("Destination account not found")
-	// ErrBalanceInsufficient ..
-	ErrBalanceInsufficient = errors.New("Insufficient balance")
-)
-
-func (m *inmemAccountRepo) TransferMoney(ctx context.Context, userOrigin, userDestination string, amount int64) error {
+func (m *inmemRepository) TransferMoney(ctx context.Context, userOrigin, userDestination string, amount int64) error {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
-	var originAccount *models.Account
-	var destinationAccount *models.Account
+	var originAccount *account.Account
+	var destinationAccount *account.Account
 	for _, v := range m.accounts {
 		if v.UserID == userOrigin {
 			originAccount = v
@@ -85,13 +74,13 @@ func (m *inmemAccountRepo) TransferMoney(ctx context.Context, userOrigin, userDe
 		}
 	}
 	if originAccount == nil {
-		return ErrOriginAccountNotFound
+		return account.ErrOriginAccountNotFound
 	}
 	if destinationAccount == nil {
-		return ErrDestinationAccountNotFound
+		return account.ErrDestinationAccountNotFound
 	}
 	if originAccount.Balance < amount {
-		return ErrBalanceInsufficient
+		return account.ErrBalanceInsufficient
 	}
 
 	originAccount.Balance = originAccount.Balance - amount
@@ -100,7 +89,7 @@ func (m *inmemAccountRepo) TransferMoney(ctx context.Context, userOrigin, userDe
 	return nil
 }
 
-func (m *inmemAccountRepo) FindByUserID(ctx context.Context, userID string) (*models.Account, error) {
+func (m *inmemRepository) FindByUserID(ctx context.Context, userID string) (*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -113,7 +102,7 @@ func (m *inmemAccountRepo) FindByUserID(ctx context.Context, userID string) (*mo
 	return nil, fmt.Errorf("The User ID %s doesn't have any account", userID)
 }
 
-func (m *inmemAccountRepo) GetBalance(ctx context.Context, num string) (int64, error) {
+func (m *inmemRepository) GetBalance(ctx context.Context, num string) (int64, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -125,11 +114,11 @@ func (m *inmemAccountRepo) GetBalance(ctx context.Context, num string) (int64, e
 	return 0, fmt.Errorf("Cannot get balance, account number %s not found", num)
 }
 
-func (m *inmemAccountRepo) UpdateBalance(ctx context.Context, num string, amount int64) (*models.Account, error) {
+func (m *inmemRepository) UpdateBalance(ctx context.Context, num string, amount int64) (*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
-	var account *models.Account
+	var account *account.Account
 	for _, v := range m.accounts {
 		if v.Num == num && v.Balance >= amount {
 			account = v

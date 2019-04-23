@@ -1,4 +1,4 @@
-package repository
+package account
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 func TestAccountRepositoryListAllEmptyRepository(t *testing.T) {
-	accountRepository := NewInmemAccountRepo(nil)
+	accountRepository := NewInmemoryRepository(nil)
 	got, _ := accountRepository.ListAll(context.Background())
 	assert.Equal(t, 0, len(got), "Account repository not empty")
 }
@@ -18,7 +18,7 @@ func TestAccountRepositoryListAllEmptyRepository(t *testing.T) {
 func TestAccountRepositoryListAll(t *testing.T) {
 	accounts := sample.Accounts
 
-	accountRepository := NewInmemAccountRepo(accounts)
+	accountRepository := NewInmemoryRepository(accounts)
 	got, _ := accountRepository.ListAll(context.Background())
 	assert.Equal(t, len(accounts), len(got), "Not the same size")
 
@@ -32,14 +32,14 @@ func TestAccountRepositoryFindByUserID(t *testing.T) {
 	accountID := "D8KDR"
 	expected := sample.Accounts[accountID]
 
-	accountRepository := NewInmemAccountRepo(sample.Accounts)
+	accountRepository := NewInmemoryRepository(sample.Accounts)
 	got, _ := accountRepository.FindByUserID(context.Background(), expected.UserID)
 
 	assert.Equal(t, expected.Num, got.Num, "Not the same")
 }
 
 func TestAccountRepositoryFindByUserIDNotFound(t *testing.T) {
-	accountRepository := NewInmemAccountRepo(sample.Accounts)
+	accountRepository := NewInmemoryRepository(sample.Accounts)
 	_, err := accountRepository.FindByUserID(context.Background(), "user-id-does-not-exist")
 
 	assert.NotNil(t, err, "Not the same")
@@ -52,7 +52,7 @@ func TestAccountRepositoryUpdateBalance(t *testing.T) {
 	expected := sample.Accounts[accountID]
 	expectedBalance := sample.Accounts[accountID].Balance - (10 * amount)
 
-	accountRepository := NewInmemAccountRepo(sample.Accounts)
+	accountRepository := NewInmemoryRepository(sample.Accounts)
 
 	var wg sync.WaitGroup
 	wg.Add(10)
@@ -72,7 +72,7 @@ func TestAccountRepositoryUpdateBalance(t *testing.T) {
 func TestAccountRepositoryUpdateBalanceNotFound(t *testing.T) {
 	amount := int64(400)
 
-	accountRepository := NewInmemAccountRepo(sample.Accounts)
+	accountRepository := NewInmemoryRepository(sample.Accounts)
 	_, err := accountRepository.UpdateBalance(context.Background(), "user-id-does-not-exist", amount)
 
 	assert.NotNil(t, err, "Not the same")

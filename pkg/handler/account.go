@@ -6,17 +6,17 @@ import (
 	"log"
 	"net/http"
 
-	repository "github.com/garciademarina/verse/pkg/repository"
+	"github.com/garciademarina/verse/pkg/account"
 	"github.com/go-chi/chi"
 )
 
 // AccountHandler handler struct for account endpoints
 type AccountHandler struct {
-	repo repository.AccountRepo
+	repo account.Repository
 }
 
 // NewAccountHandler create a new AccountHandler
-func NewAccountHandler(repo repository.AccountRepo) AccountHandler {
+func NewAccountHandler(repo account.Repository) AccountHandler {
 	return AccountHandler{
 		repo: repo,
 	}
@@ -154,13 +154,13 @@ func (h *AccountHandler) TransferMoney(logger *log.Logger) http.HandlerFunc {
 func handlerTransferError(w http.ResponseWriter, err error) {
 	if err != nil {
 		switch err {
-		case repository.ErrOriginAccountNotFound:
+		case account.ErrOriginAccountNotFound:
 			RespondWithError(w, http.StatusBadRequest, APIError{Type: "api_error", Code: "account_not_found"})
 			return
-		case repository.ErrBalanceInsufficient:
+		case account.ErrBalanceInsufficient:
 			RespondWithError(w, http.StatusBadRequest, APIError{Type: "api_error", Code: "balance_insufficient"})
 			return
-		case repository.ErrDestinationAccountNotFound:
+		case account.ErrDestinationAccountNotFound:
 			RespondWithError(w, http.StatusBadRequest, APIError{Type: "api_error", Code: "destination_account_not_found"})
 			return
 		default:

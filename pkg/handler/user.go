@@ -4,16 +4,16 @@ import (
 	"log"
 	"net/http"
 
-	repository "github.com/garciademarina/verse/pkg/repository"
+	"github.com/garciademarina/verse/pkg/user"
 )
 
 // UserHandler handler struct for user endpoints
 type UserHandler struct {
-	repo repository.UserRepo
+	repo user.Repository
 }
 
 // NewUserHandler create a new UserHandler
-func NewUserHandler(repo repository.UserRepo) UserHandler {
+func NewUserHandler(repo user.Repository) UserHandler {
 	return UserHandler{
 		repo: repo,
 	}
