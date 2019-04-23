@@ -9,6 +9,14 @@ Write a REST API in the language/framework of your choice for a money-transferri
 
 * An endpoint to make a transfer of money between two users.
 
+## Installation
+
+### Using docker
+```bash
+cd $GOPATH/src/github.com/garciademarina/verse
+docker build -t go-verse .
+docker run -p 8080:8080 go-verse
+```
 
 ## Notes
 The API can be used as admin or as regular user. 

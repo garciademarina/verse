@@ -16,7 +16,6 @@ import (
 func init() {
 	TokenAuthHS256 = jwtauth.New("HS256", TokenSecret, nil)
 	logger = log.New(ioutil.Discard, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	// logger = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 func TestListAll(t *testing.T) {

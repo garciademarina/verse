@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -31,8 +30,8 @@ type BalanceResponse struct {
 
 // ListAll handles GET /admin/accounts requests.
 func (h *AccountHandler) ListAll(logger *log.Logger) http.HandlerFunc {
-	logger.Printf("[handle] AccountHandler.ListAll\n")
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger.Printf("[handle] AccountHandler.ListAll\n")
 
 		accounts, _ := h.repo.ListAll(r.Context())
 
@@ -42,8 +41,8 @@ func (h *AccountHandler) ListAll(logger *log.Logger) http.HandlerFunc {
 
 // GetBalanceById handles GET /admin/balance/{userID} requests.
 func (h *AccountHandler) GetBalanceById(logger *log.Logger) http.HandlerFunc {
-	logger.Printf("[handle] AccountHandler.GetBalanceById\n")
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger.Printf("[handle] AccountHandler.GetBalanceById\n")
 		if userID := chi.URLParam(r, "userID"); userID != "" {
 			account, _ := h.repo.FindByUserID(r.Context(), userID)
 			respondwithJSON(w, http.StatusOK, &BalanceResponse{
@@ -57,8 +56,8 @@ func (h *AccountHandler) GetBalanceById(logger *log.Logger) http.HandlerFunc {
 
 // GetBalance handles GET /balance requests.
 func (h *AccountHandler) GetBalance(logger *log.Logger) http.HandlerFunc {
-	logger.Printf("[handle] AccountHandler.GetBalance\n")
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger.Printf("[handle] AccountHandler.GetBalance\n")
 
 		userID, err := GetJwtValue(r, "user_id")
 		if err != nil {
@@ -97,8 +96,8 @@ type TransferMoneyResponse struct {
 
 // TransferMoneyAdmin handles POST /admin/transfers requests.
 func (h *AccountHandler) TransferMoneyAdmin(logger *log.Logger) http.HandlerFunc {
-	logger.Printf("[handle] AccountHandler.TransferMoneyAdmin\n")
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger.Printf("[handle] AccountHandler.TransferMoneyAdmin\n")
 		var transfer TransferMoneyPostAdmin
 		err := decodeTransferMoneyAdmin(r, &transfer)
 		if err != nil {
@@ -122,16 +121,14 @@ func (h *AccountHandler) TransferMoneyAdmin(logger *log.Logger) http.HandlerFunc
 
 // TransferMoney handles POST /transfers requests.
 func (h *AccountHandler) TransferMoney(logger *log.Logger) http.HandlerFunc {
-	logger.Printf("[handle] AccountHandler.TransferMoney\n")
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger.Printf("[handle] AccountHandler.TransferMoney\n")
 
 		userOrigin, err := GetJwtValue(r, "user_id")
 		if err != nil {
 			RespondWithError(w, http.StatusBadRequest, APIError{Type: "api_error", Code: "jwt_user_id_not_found"})
 			return
 		}
-		fmt.Printf("Debug '%+v'\n", userOrigin)
-		fmt.Printf("Debug eror '%v'\n", err)
 
 		var transfer TransferMoneyPost
 		err = decodeTransferMoney(r, &transfer)

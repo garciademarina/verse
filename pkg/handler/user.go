@@ -21,8 +21,8 @@ func NewUserHandler(repo repository.UserRepo) UserHandler {
 
 // FindById handles GET /xxx requests.
 func (h *UserHandler) FindById(logger *log.Logger) http.HandlerFunc {
-	logger.Printf("[handle] UserHandler.FindById\n")
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger.Printf("[handle] UserHandler.FindById\n")
 		userID, err := GetJwtValue(r, "user_id")
 		if err != nil {
 			RespondWithError(w, http.StatusBadRequest, APIError{Type: "api_error", Code: "jwt_user_id_not_found"})

@@ -35,9 +35,8 @@ func GetJwtValue(r *http.Request, key string) (string, error) {
 	if !err2 {
 		return "", errors.New("jwt key not found")
 	}
-	fmt.Printf("%v\n", keyValue)
 
-	return fmt.Sprintf("%s", claims[key]), nil
+	return fmt.Sprintf("%s", keyValue), nil
 }
 
 // APIError represents api error messages
