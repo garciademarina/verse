@@ -20,7 +20,7 @@ docker run -p 8080:8080 go-verse
 
 ### From source
 From source
-Ghtop requires Go 1.12 or later.
+requires Go 1.12 or later.
 ```bash
 go get -u github.com/garciademarina/verse
 ```
@@ -52,12 +52,13 @@ Message (string) A string representation for the error
 
 #### GET /admin/balance/{userID}
 Get the current balance of a given user. {userID}
+
 **Arguments**
-userID (required) A string ID of a user to get the balance
+- userID (required) A string ID of a user to get the balance
+
 **Response**
-num (string) A string ID of a user to withdraw the money 
-DestinationUser (string) A string ID of a user to send the money
-Amount (int64)
+- num (string) A string ID of a user to withdraw the money 
+- balance (int64) The balance in cents
 
 ```json
 {
@@ -68,17 +69,20 @@ Amount (int64)
 
 #### POST /admin/transfers 
 Make a transfer of money between two users.
+
 **Arguments**
-Amount (required) A positive integer representing how much money to transfer
-UserOrigin (required) A string ID of a user to withdraw the money 
-UserDestination (required) A string ID of a user to send the money
+- Amount (required) A positive integer representing how much money to transfer
+- UserOrigin (required) A string ID of a user to withdraw the money 
+- UserDestination (required) A string ID of a user to send the money
+
 **Response**
-OriginUser (string) A string ID of a user to withdraw the money 
-DestinationUser (string) A string ID of a user to send the money
-Amount (int64) The amount of money transfered
+- OriginUser (string) A string ID of a user to withdraw the money 
+- DestinationUser (string) A string ID of a user to send the money
+- Amount (int64) The amount of money transfered
 
 #### GET /admin/accounts
 Get all accounts.
+
 **Response**
 A list of all accounts.
 ```json
@@ -107,10 +111,10 @@ A list of all accounts.
 
 #### GET /balance 
 Get the current balance of the user.
+
 **Response**
-num (string) A string ID of a user to withdraw the money 
-DestinationUser (string) A string ID of a user to send the money
-Amount (int64)
+- num (string) A string ID of a user to withdraw the money 
+- balance (int64) The balance in cents
 
 ```json
 {
@@ -119,28 +123,23 @@ Amount (int64)
 }
 ```
 
-
-
-
-
 #### POST /transfers 
 Make a transfer of money between two users.
+
 **Arguments**
-Amount (required) A positive integer representing how much money to transfer
-UserOrigin (required) A string ID of a user to withdraw the money 
-UserDestination (required) A string ID of a user to send the money
+- Amount (required) A positive integer representing how much money to transfer
+- UserOrigin (required) A string ID of a user to withdraw the money 
+- UserDestination (required) A string ID of a user to send the money
+
 **Response**
-OriginUser (string) A string ID of a user to withdraw the money 
-DestinationUser (string) A string ID of a user to send the money
-Amount (int64) The amount of money transfered
-
-
-
-
+- OriginUser (string) A string ID of a user to withdraw the money 
+- DestinationUser (string) A string ID of a user to send the money
+- Amount (int64) The amount of money transfered
 
 
 #### GET /user
 Get user information.
+
 **Response**
 The user information.
 
