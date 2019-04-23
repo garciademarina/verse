@@ -58,6 +58,5 @@ func ensureInterruptionsStopApplication(cancelFunc context.CancelFunc, logger *l
 		cancelFunc()
 
 		os.Exit(1)
-		return
 	}()
 }

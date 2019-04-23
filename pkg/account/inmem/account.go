@@ -30,10 +30,6 @@ func NewInmemoryRepository(accounts map[account.Num]*account.Account) *InmemRepo
 func (m *InmemRepository) ListAll(ctx context.Context) ([]*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
-	values := make([]*account.Account, 0, len(m.accounts))
-	for _, value := range m.accounts {
-		values = append(values, value)
-	}
 
 	// sort map
 	sortedKeys := make([]account.Num, 0, len(m.accounts))
