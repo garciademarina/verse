@@ -18,6 +18,13 @@ docker build -t go-verse .
 docker run -p 8080:8080 go-verse
 ```
 
+### From source
+From source
+Ghtop requires Go 1.12 or later.
+```bash
+go get -u github.com/garciademarina/verse
+```
+
 ## Notes
 The API can be used as admin or as regular user. 
 
