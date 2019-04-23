@@ -19,8 +19,8 @@ docker run -p 8080:8080 go-verse
 ```
 
 ### From source
-From source
-requires Go 1.12 or later.
+
+Requires Go 1.12 or later.
 ```bash
 go get -u github.com/garciademarina/verse
 ```
