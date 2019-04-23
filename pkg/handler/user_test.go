@@ -17,7 +17,24 @@ func init() {
 	TokenAuthHS256 = jwtauth.New("HS256", TokenSecret, nil)
 	logger = log.New(ioutil.Discard, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 }
+func TestFindByIdNotUserIdInJwt(t *testing.T) {
 
+	users := sample.Users
+	repoUsers := user.NewInmemoryRepository(users)
+	userHandler := NewUserHandler(repoUsers)
+	handler := userHandler.FindById(logger)
+
+	r := chi.NewRouter()
+	r.Use(jwtauth.Verifier(TokenAuthHS256), jwtauth.Authenticator)
+	r.Get("/", handler)
+
+	ts := httptest.NewServer(r)
+	defer ts.Close()
+
+	if status, resp := testRequest(t, ts, "GET", "/", newAuthHeader(jwt.MapClaims{"no_valid_user_id": "01D3XZ3ZHCP3KG9VT4FGAD8KDR"}), nil); status != 400 || resp != `{"type":"api_error","code":"jwt_user_id_not_found","message":""}` {
+		t.Fatalf(resp)
+	}
+}
 func TestFindById(t *testing.T) {
 
 	users := sample.Users
