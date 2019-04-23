@@ -116,6 +116,82 @@ func TestAdminTransferBalanceInsufficient(t *testing.T) {
 		t.Fatalf("%v\n", resp)
 	}
 }
+
+func TestAdminTransferInvalidPostData(t *testing.T) {
+
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
+	accountHandler := NewAccountHandler(repoAccount)
+	handler := accountHandler.TransferMoneyAdmin(logger)
+
+	r := chi.NewRouter()
+	r.Post("/admin/transfers", handler)
+
+	ts := httptest.NewServer(r)
+	defer ts.Close()
+
+	payload := ` { }`
+	expected := `{"type":"api_error","code":"decode_json_body_failed","message":""}`
+	if status, resp := testRequest(t, ts, "POST", "/admin/transfers?key=admin", nil, strings.NewReader(payload)); status != 400 || resp != expected {
+		t.Fatalf("%v\n", resp)
+	}
+}
+func TestTransferInvalidPostData(t *testing.T) {
+
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
+	accountHandler := NewAccountHandler(repoAccount)
+	handler := accountHandler.TransferMoney(logger)
+
+	r := chi.NewRouter()
+	r.Use(jwtauth.Verifier(TokenAuthHS256), jwtauth.Authenticator)
+	r.Post("/transfers", handler)
+
+	ts := httptest.NewServer(r)
+	defer ts.Close()
+
+	payload := ` { }`
+	expected := `{"type":"api_error","code":"decode_json_body_failed","message":""}`
+	if status, resp := testRequest(t, ts, "POST", "/transfers", newAuthHeader(jwt.MapClaims{"user_id": "01D3XZ3ZHCP3KG9VT4FGAD8KDR"}), strings.NewReader(payload)); status != 400 || resp != expected {
+		t.Fatalf("%v\n", resp)
+	}
+}
+func TestTransferOriginAccountNotFound(t *testing.T) {
+
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
+	accountHandler := NewAccountHandler(repoAccount)
+	handler := accountHandler.TransferMoney(logger)
+
+	r := chi.NewRouter()
+	r.Use(jwtauth.Verifier(TokenAuthHS256), jwtauth.Authenticator)
+	r.Post("/transfers", handler)
+
+	ts := httptest.NewServer(r)
+	defer ts.Close()
+
+	payload := ` { "UserDestination": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 99 }`
+	expected := `{"type":"api_error","code":"account_not_found","message":""}`
+	if status, resp := testRequest(t, ts, "POST", "/transfers", newAuthHeader(jwt.MapClaims{"user_id": "not-exist"}), strings.NewReader(payload)); status != 400 || resp != expected {
+		t.Fatalf("%v\n", resp)
+	}
+}
+func TestTransferDestinationAccountNotFound(t *testing.T) {
+
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
+	accountHandler := NewAccountHandler(repoAccount)
+	handler := accountHandler.TransferMoney(logger)
+
+	r := chi.NewRouter()
+	r.Use(jwtauth.Verifier(TokenAuthHS256), jwtauth.Authenticator)
+	r.Post("/transfers", handler)
+
+	ts := httptest.NewServer(r)
+	defer ts.Close()
+
+	payload := ` { "UserDestination": "not-found", "Amount": 99 }`
+	expected := `{"type":"api_error","code":"destination_account_not_found","message":""}`
+	if status, resp := testRequest(t, ts, "POST", "/transfers", newAuthHeader(jwt.MapClaims{"user_id": "01D3XZ3ZHCP3KG9VT4FGAD8KDR"}), strings.NewReader(payload)); status != 400 || resp != expected {
+		t.Fatalf("%v\n", resp)
+	}
+}
 func TestTransferNotUserIdInJwt(t *testing.T) {
 
 	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
@@ -132,6 +208,24 @@ func TestTransferNotUserIdInJwt(t *testing.T) {
 	payload := ` { "UserDestination": "01D3XZ7CN92AKS9HAPSZ4D5DP9", "Amount": 9990000 }`
 	expected := `{"type":"api_error","code":"jwt_user_id_not_found","message":""}`
 	if status, resp := testRequest(t, ts, "POST", "/transfers", newAuthHeader(jwt.MapClaims{"no_valid_user_id": "01D3XZ3ZHCP3KG9VT4FGAD8KDR"}), strings.NewReader(payload)); status != 400 || resp != expected {
+		t.Fatalf("%v\n", resp)
+	}
+}
+func TestBalanceUserIdNotFound(t *testing.T) {
+
+	repoAccount := account.NewInmemoryRepository(getSampleAccounts())
+	accountHandler := NewAccountHandler(repoAccount)
+	handler := accountHandler.GetBalance(logger)
+
+	r := chi.NewRouter()
+	r.Use(jwtauth.Verifier(TokenAuthHS256), jwtauth.Authenticator)
+	r.Get("/", handler)
+
+	ts := httptest.NewServer(r)
+	defer ts.Close()
+
+	expected := `{"type":"api_error","code":"jwt_user_id_not_found","message":""}`
+	if status, resp := testRequest(t, ts, "GET", "/", newAuthHeader(jwt.MapClaims{}), nil); status != 400 || resp != expected {
 		t.Fatalf("%v\n", resp)
 	}
 }
