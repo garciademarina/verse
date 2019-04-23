@@ -7,38 +7,29 @@ import (
 	repository "github.com/garciademarina/verse/pkg/repository"
 )
 
-// User ...
-type User struct {
+// UserHandler handler struct for user endpoints
+type UserHandler struct {
 	repo repository.UserRepo
 }
 
-// NewUserHandler explain ...
-func NewUserHandler(repo repository.UserRepo) User {
-	return User{
+// NewUserHandler create a new UserHandler
+func NewUserHandler(repo repository.UserRepo) UserHandler {
+	return UserHandler{
 		repo: repo,
 	}
 }
 
-// FindById handles GET /top requests.
-func (u *User) FindById(logger *log.Logger) http.HandlerFunc {
+// FindById handles GET /xxx requests.
+func (h *UserHandler) FindById(logger *log.Logger) http.HandlerFunc {
+	logger.Printf("[handle] UserHandler.FindById\n")
 	return func(w http.ResponseWriter, r *http.Request) {
-		userID, _ := GetJwtValue(r, "user_id")
-
-		err := r.ParseForm()
+		userID, err := GetJwtValue(r, "user_id")
 		if err != nil {
-			logger.Printf("Error parsing the request form %s\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			RespondWithError(w, http.StatusBadRequest, APIError{Type: "api_error", Code: "jwt_user_id_not_found"})
 			return
 		}
 
-		if userID == "" {
-			logger.Printf("userID parameter not found in Jwt\n")
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		logger.Printf("...handling FindById %s\n", userID)
-		payload, _ := u.repo.FindById(r.Context(), userID)
+		payload, _ := h.repo.FindById(r.Context(), userID)
 
 		respondwithJSON(w, http.StatusOK, payload)
 	}

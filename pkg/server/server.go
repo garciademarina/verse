@@ -22,29 +22,26 @@ type Server struct {
 	Router chi.Router
 }
 
-// Config ...
+// Config represents server configuration
 type Config struct {
-	Port              int
-	Env               string
-	BasicAuthUser     string
-	BasicAuthPassword string
+	Port int
+	Env  string
 }
 
 // TokenAuth contains auth token
 var TokenAuth *jwtauth.JWTAuth
 
+// AdminKey use for /admin/ routes
+var AdminKey string
+
 // NewConfig creates new config.
 func NewConfig(
 	port int,
 	env string,
-	basicAuthUser string,
-	basicAuthPassword string,
 ) Config {
 	return Config{
-		Port:              port,
-		Env:               env,
-		BasicAuthUser:     basicAuthUser,
-		BasicAuthPassword: basicAuthPassword,
+		Port: port,
+		Env:  env,
 	}
 }
 
@@ -52,6 +49,7 @@ func NewConfig(
 func NewServer(config Config, logger *log.Logger) *Server {
 	r := chi.NewRouter()
 	TokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
+	AdminKey = "admin"
 	registerRoutes(r, config, logger)
 
 	return &Server{
@@ -65,26 +63,57 @@ func registerRoutes(r chi.Router, config Config, logger *log.Logger) {
 
 	r.Use(middleware.RequestID)
 
+	users := sample.Users
+	repoUsers := repository.NewInmemUserRepo(users)
+	userHandler := handler.NewUserHandler(repoUsers)
+
+	accounts := sample.Accounts
+	repoAccounts := repository.NewInmemAccountRepo(accounts)
+	accountHandler := handler.NewAccountHandler(repoAccounts)
+
 	// Protected routes
 	r.Group(func(r chi.Router) {
-		users := sample.Users
-		repoUsers := repository.NewInmemUserRepo(users)
-		// userHandler := handler.NewUserHandler(repoUsers)
-
-		accounts := sample.Accounts
-		repoAccounts := repository.NewInmemAccountRepo(accounts)
-		accountHandler := handler.NewAccountHandler(repoAccounts)
-
 		// Seek, verify and validate JWT tokens
 		r.Use(jwtauth.Verifier(TokenAuth))
 
 		// Handle valid / invalid tokens.
 		r.Use(authenticator(repoUsers))
 
+		r.Get("/user", userHandler.FindById(logger))
 		r.Get("/balance", accountHandler.GetBalance(logger))
 		r.Post("/transfers", accountHandler.TransferMoney(logger))
 
 	})
+
+	// Admin Protected routes
+	r.Group(func(r chi.Router) {
+
+		// Handle valid / invalid admin key.
+		r.Use(AuthenticatorAdmin(AdminKey))
+
+		r.Get("/admin/accounts", accountHandler.ListAll(logger))
+		r.Get("/admin/balance/{userID}", accountHandler.GetBalanceById(logger))
+		r.Post("/admin/transfers", accountHandler.TransferMoney(logger))
+
+	})
+}
+
+func AuthenticatorAdmin(key string) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+
+			queryValues := r.URL.Query()
+			if queryValues.Get("key") != AdminKey {
+				e := handler.APIError{Type: "authentication_error", Message: "Admin key invalid"}
+				handler.RespondWithError(w, http.StatusUnauthorized, e)
+				return
+			}
+
+			// Token is authenticated, pass it through
+			next.ServeHTTP(w, r)
+		}
+		return http.HandlerFunc(fn)
+	}
 }
 
 func authenticator(userRepo repository.UserRepo) func(next http.Handler) http.Handler {
@@ -123,19 +152,6 @@ func authenticator(userRepo repository.UserRepo) func(next http.Handler) http.Ha
 		return http.HandlerFunc(fn)
 	}
 }
-
-// A completely separate router for posts routes
-// r.Get("/", pHandler.ListAll)
-// r.Get("/{id:[0-9]+}", pHandler.FindById)
-// r.Post("/", pHandler.Create)
-// r.Put("/{id:[0-9]+}", pHandler.Update)
-// r.Delete("/{id:[0-9]+}", pHandler.Delete)
-
-// logger.Printf("Register route /user\n")
-// r.Get("/user", userHandler.FindById(logger))
-
-// logger.Printf("Register route /balance\n")
-// r.Get("/balance", accountHandler.FindByUserID(logger))
 
 // Run runs the server.
 func (s *Server) Run(ctx context.Context) error {

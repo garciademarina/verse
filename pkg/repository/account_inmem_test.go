@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"testing"
 
@@ -23,9 +22,9 @@ func TestAccountRepositoryListAll(t *testing.T) {
 	got, _ := accountRepository.ListAll(context.Background())
 	assert.Equal(t, len(accounts), len(got), "Not the same size")
 
-	for _, value := range got {
-		i := value.Num
-		assert.Equal(t, fmt.Sprintf("%+v", accounts[i]), fmt.Sprintf("%+v", value), "Not the same")
+	for _, account := range got {
+		i := account.Num
+		assert.Equal(t, accounts[i], account, "Not the same")
 	}
 }
 
@@ -47,7 +46,7 @@ func TestAccountRepositoryFindByUserIDNotFound(t *testing.T) {
 }
 
 func TestAccountRepositoryUpdateBalance(t *testing.T) {
-	amount := float64(4.0)
+	amount := int64(400)
 
 	accountID := "D8KDR"
 	expected := sample.Accounts[accountID]
@@ -58,7 +57,7 @@ func TestAccountRepositoryUpdateBalance(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(10)
 	for i := 0; i < 10; i++ {
-		go func(amount float64) {
+		go func(amount int64) {
 			defer wg.Done()
 			_, _ = accountRepository.UpdateBalance(context.Background(), "D8KDR", amount)
 		}(amount)
@@ -71,7 +70,7 @@ func TestAccountRepositoryUpdateBalance(t *testing.T) {
 }
 
 func TestAccountRepositoryUpdateBalanceNotFound(t *testing.T) {
-	amount := float64(4.0)
+	amount := int64(400)
 
 	accountRepository := NewInmemAccountRepo(sample.Accounts)
 	_, err := accountRepository.UpdateBalance(context.Background(), "user-id-does-not-exist", amount)

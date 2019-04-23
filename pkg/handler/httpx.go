@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -30,7 +31,13 @@ func GetJwtValue(r *http.Request, key string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s", claims["user_id"]), nil
+	keyValue, err2 := claims[key].(string)
+	if !err2 {
+		return "", errors.New("jwt key not found")
+	}
+	fmt.Printf("%v\n", keyValue)
+
+	return fmt.Sprintf("%s", claims[key]), nil
 }
 
 // APIError represents api error messages

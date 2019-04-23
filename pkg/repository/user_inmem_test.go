@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	sample "github.com/garciademarina/verse/cmd/sample-data"
@@ -22,9 +21,9 @@ func TestUserRepositoryListAll(t *testing.T) {
 	got, _ := userRepository.ListAll(context.Background())
 	assert.Equal(t, len(users), len(got), "Not the same size")
 
-	for _, value := range got {
-		i := value.ID
-		assert.Equal(t, fmt.Sprintf("%+v", users[i]), fmt.Sprintf("%+v", value), "Not the same")
+	for _, user := range got {
+		i := user.ID
+		assert.Equal(t, users[i], user, "Not the same")
 	}
 }
 

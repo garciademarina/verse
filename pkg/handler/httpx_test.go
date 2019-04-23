@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -10,12 +9,15 @@ import (
 	"testing"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	sample "github.com/garciademarina/verse/cmd/sample-data"
+	"github.com/garciademarina/verse/pkg/models"
 	"github.com/go-chi/jwtauth"
 )
 
 var (
 	TokenAuthHS256 *jwtauth.JWTAuth
 	TokenSecret    = []byte("secret")
+	logger         *log.Logger
 )
 
 func testRequest(t *testing.T, ts *httptest.Server, method, path string, header http.Header, body io.Reader) (int, string) {
@@ -44,7 +46,6 @@ func testRequest(t *testing.T, ts *httptest.Server, method, path string, header 
 		return 0, ""
 	}
 	defer resp.Body.Close()
-	fmt.Printf("%v, %v\n", resp.StatusCode, string(respBody))
 	return resp.StatusCode, string(respBody)
 }
 
@@ -63,6 +64,20 @@ func newJwtToken(secret []byte, claims ...jwt.MapClaims) string {
 func newAuthHeader(claims ...jwt.MapClaims) http.Header {
 	h := http.Header{}
 	h.Set("Authorization", "BEARER "+newJwtToken(TokenSecret, claims...))
-	fmt.Printf("%s\n", newJwtToken(TokenSecret, claims...))
+	// fmt.Printf("%s\n", newJwtToken(TokenSecret, claims...))
 	return h
+}
+
+func getSampleAccounts() map[string]*models.Account {
+	accounts := make(map[string]*models.Account)
+	for k2, v2 := range sample.Accounts {
+		accounts[k2] = &models.Account{
+			Num:     v2.Num,
+			UserID:  v2.UserID,
+			Name:    v2.Name,
+			OpenAt:  v2.OpenAt,
+			Balance: v2.Balance,
+		}
+	}
+	return accounts
 }

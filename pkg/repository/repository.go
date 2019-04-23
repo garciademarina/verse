@@ -17,7 +17,7 @@ type AccountRepo interface {
 	ListAll(ctx context.Context) ([]*models.Account, error)
 	FindByID(ctx context.Context, id string) (*models.Account, error)
 	FindByUserID(ctx context.Context, userID string) (*models.Account, error)
-	GetBalance(ctx context.Context, num string) (float64, error)
-	UpdateBalance(ctx context.Context, num string, amount float64) (*models.Account, error)
-	TransferMoney(ctx context.Context, origin, destination string, amount float64) error
+	GetBalance(ctx context.Context, num string) (int64, error)
+	UpdateBalance(ctx context.Context, num string, amount int64) (*models.Account, error)
+	TransferMoney(ctx context.Context, origin, destination string, amount int64) error
 }

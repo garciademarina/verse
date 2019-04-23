@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"io/ioutil"
 	"log"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -15,14 +15,15 @@ import (
 
 func init() {
 	TokenAuthHS256 = jwtauth.New("HS256", TokenSecret, nil)
+	logger = log.New(ioutil.Discard, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
-func TestFoo(t *testing.T) {
+func TestFindById(t *testing.T) {
 
 	users := sample.Users
 	repoUsers := repository.NewInmemUserRepo(users)
 	userHandler := NewUserHandler(repoUsers)
-	handler := userHandler.FindById(log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile))
+	handler := userHandler.FindById(logger)
 
 	r := chi.NewRouter()
 	r.Use(jwtauth.Verifier(TokenAuthHS256), jwtauth.Authenticator)
