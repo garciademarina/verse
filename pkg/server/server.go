@@ -137,13 +137,13 @@ func authenticator(userRepo puser.Repository) func(next http.Handler) http.Handl
 
 			// check if user exist ...
 			userID, _ := handler.GetJwtValue(r, "user_id")
-			user, err := userRepo.FindById(r.Context(), string(userID))
+			found, err := userRepo.FindById(r.Context(), puser.ID(userID))
 			if err != nil {
 				http.Error(w, "User does not exist", 404)
 				return
 			}
 
-			if user.ID != userID {
+			if found.ID != puser.ID(userID) {
 				http.Error(w, "User does not exist", 404)
 				return
 			}

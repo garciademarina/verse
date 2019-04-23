@@ -29,7 +29,7 @@ func (h *UserHandler) FindById(logger *log.Logger) http.HandlerFunc {
 			return
 		}
 
-		payload, _ := h.repo.FindById(r.Context(), userID)
+		payload, _ := h.repo.FindById(r.Context(), user.ID(userID))
 
 		respondwithJSON(w, http.StatusOK, payload)
 	}

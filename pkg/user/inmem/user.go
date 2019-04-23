@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"sync"
 
-	puser "github.com/garciademarina/verse/pkg/user"
+	"github.com/garciademarina/verse/pkg/user"
 )
 
 type inmemRepository struct {
 	mtx   sync.RWMutex
-	users map[string]*puser.User
+	users map[user.ID]*user.User
 }
 
 // NewInmemoryRepository returns implement of user repository interface
-func NewInmemoryRepository(users map[string]*puser.User) puser.Repository {
+func NewInmemoryRepository(users map[user.ID]*user.User) user.Repository {
 	if users == nil {
-		users = make(map[string]*puser.User)
+		users = make(map[user.ID]*user.User)
 	}
 
 	return &inmemRepository{
@@ -24,17 +24,17 @@ func NewInmemoryRepository(users map[string]*puser.User) puser.Repository {
 	}
 }
 
-func (m *inmemRepository) ListAll(ctx context.Context) ([]*puser.User, error) {
+func (m *inmemRepository) ListAll(ctx context.Context) ([]*user.User, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
-	values := make([]*puser.User, 0, len(m.users))
+	values := make([]*user.User, 0, len(m.users))
 	for _, value := range m.users {
 		values = append(values, value)
 	}
 	return values, nil
 }
 
-func (m *inmemRepository) FindById(ctx context.Context, id string) (*puser.User, error) {
+func (m *inmemRepository) FindById(ctx context.Context, id user.ID) (*user.User, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 

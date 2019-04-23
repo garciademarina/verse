@@ -7,7 +7,7 @@ import (
 	"github.com/garciademarina/verse/pkg/user"
 )
 
-var Users = map[string]*user.User{
+var Users = map[user.ID]*user.User{
 	"01D3XZ3ZHCP3KG9VT4FGAD8KDR": &user.User{
 		ID:    "01D3XZ3ZHCP3KG9VT4FGAD8KDR",
 		Name:  "Jenny",
@@ -37,7 +37,7 @@ func init() {
 		"2019-04-23T22:08:41+00:00")
 }
 
-var Accounts = map[string]*account.Account{
+var Accounts = map[account.Num]*account.Account{
 	"D8KDR": &account.Account{
 		Num:     "D8KDR",
 		UserID:  "01D3XZ3ZHCP3KG9VT4FGAD8KDR",

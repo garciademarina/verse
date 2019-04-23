@@ -67,8 +67,8 @@ func newAuthHeader(claims ...jwt.MapClaims) http.Header {
 	return h
 }
 
-func getSampleAccounts() map[string]*account.Account {
-	accounts := make(map[string]*account.Account)
+func getSampleAccounts() map[account.Num]*account.Account {
+	accounts := make(map[account.Num]*account.Account)
 	for k2, v2 := range sample.Accounts {
 		accounts[k2] = &account.Account{
 			Num:     v2.Num,

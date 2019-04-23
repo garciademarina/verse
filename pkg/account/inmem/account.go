@@ -11,13 +11,13 @@ import (
 
 type inmemRepository struct {
 	mtx      sync.RWMutex
-	accounts map[string]*account.Account
+	accounts map[account.Num]*account.Account
 }
 
 // NewInmemoryRepository returns implement of user repository interface
-func NewInmemoryRepository(accounts map[string]*account.Account) account.Repository {
+func NewInmemoryRepository(accounts map[account.Num]*account.Account) account.Repository {
 	if accounts == nil {
-		accounts = make(map[string]*account.Account)
+		accounts = make(map[account.Num]*account.Account)
 	}
 
 	return &inmemRepository{
@@ -33,22 +33,24 @@ func (m *inmemRepository) ListAll(ctx context.Context) ([]*account.Account, erro
 	}
 
 	// sort map
-	sortedKeys := make([]string, 0, len(m.accounts))
+	sortedKeys := make([]account.Num, 0, len(m.accounts))
 	for k := range m.accounts {
 		sortedKeys = append(sortedKeys, k)
 	}
-	sort.Strings(sortedKeys)
+
+	sort.Slice(sortedKeys, func(i, j int) bool {
+		return sortedKeys[i] < sortedKeys[j]
+	})
 
 	accounts := make([]*account.Account, 0, len(m.accounts))
 	for _, v := range sortedKeys {
-		// fmt.Printf("k: %s, v: %v\n", k, myRecords[k])
 		accounts = append(accounts, m.accounts[v])
 	}
 
 	return accounts, nil
 }
 
-func (m *inmemRepository) FindByID(ctx context.Context, num string) (*account.Account, error) {
+func (m *inmemRepository) FindByID(ctx context.Context, num account.Num) (*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -102,7 +104,7 @@ func (m *inmemRepository) FindByUserID(ctx context.Context, userID string) (*acc
 	return nil, fmt.Errorf("The User ID %s doesn't have any account", userID)
 }
 
-func (m *inmemRepository) GetBalance(ctx context.Context, num string) (int64, error) {
+func (m *inmemRepository) GetBalance(ctx context.Context, num account.Num) (int64, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -114,7 +116,7 @@ func (m *inmemRepository) GetBalance(ctx context.Context, num string) (int64, er
 	return 0, fmt.Errorf("Cannot get balance, account number %s not found", num)
 }
 
-func (m *inmemRepository) UpdateBalance(ctx context.Context, num string, amount int64) (*account.Account, error) {
+func (m *inmemRepository) UpdateBalance(ctx context.Context, num account.Num, amount int64) (*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 

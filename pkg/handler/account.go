@@ -24,8 +24,8 @@ func NewAccountHandler(repo account.Repository) AccountHandler {
 
 // BalanceResponse represents api balance response
 type BalanceResponse struct {
-	Num     string `json:"num"`
-	Balance int64  `json:"balance"`
+	Num     account.Num `json:"num"`
+	Balance int64       `json:"balance"`
 }
 
 // ListAll handles GET /admin/accounts requests.

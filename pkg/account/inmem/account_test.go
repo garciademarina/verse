@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	sample "github.com/garciademarina/verse/cmd/sample-data"
+	"github.com/garciademarina/verse/pkg/account"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,7 +30,7 @@ func TestAccountRepositoryListAll(t *testing.T) {
 }
 
 func TestAccountRepositoryFindByUserID(t *testing.T) {
-	accountID := "D8KDR"
+	accountID := account.Num("D8KDR")
 	expected := sample.Accounts[accountID]
 
 	accountRepository := NewInmemoryRepository(sample.Accounts)
@@ -48,7 +49,7 @@ func TestAccountRepositoryFindByUserIDNotFound(t *testing.T) {
 func TestAccountRepositoryUpdateBalance(t *testing.T) {
 	amount := int64(400)
 
-	accountID := "D8KDR"
+	accountID := account.Num("D8KDR")
 	expected := sample.Accounts[accountID]
 	expectedBalance := sample.Accounts[accountID].Balance - (10 * amount)
 
@@ -59,7 +60,7 @@ func TestAccountRepositoryUpdateBalance(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		go func(amount int64) {
 			defer wg.Done()
-			_, _ = accountRepository.UpdateBalance(context.Background(), "D8KDR", amount)
+			_, _ = accountRepository.UpdateBalance(context.Background(), account.Num("D8KDR"), amount)
 		}(amount)
 	}
 	wg.Wait()

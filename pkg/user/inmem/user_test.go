@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	sample "github.com/garciademarina/verse/cmd/sample-data"
+	"github.com/garciademarina/verse/pkg/user"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -28,7 +29,7 @@ func TestUserRepositoryListAll(t *testing.T) {
 }
 
 func TestUserRepositoryFindById(t *testing.T) {
-	id := "01D3XZ3ZHCP3KG9VT4FGAD8KDR"
+	id := user.ID("01D3XZ3ZHCP3KG9VT4FGAD8KDR")
 	expected := sample.Users[id]
 
 	userRepository := NewInmemoryRepository(sample.Users)
