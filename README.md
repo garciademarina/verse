@@ -1,3 +1,6 @@
+Carlos García de Marina Vilar
+garciademarina(at)gmail.com
+
 # verse test
 
 Write a REST API in the language/framework of your choice for a money-transferring application like Verse. It should have the following features:
@@ -151,4 +154,4 @@ curl -v -X POST "http://localhost:8080/transfers?jwt={jwtoken}" -H "accept: appl
 
 
 
-Carlos García de Marina Vilar - garciademarina(at)gmail.com
+
