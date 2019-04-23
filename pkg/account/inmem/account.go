@@ -9,22 +9,25 @@ import (
 	"github.com/garciademarina/verse/pkg/account"
 )
 
-type inmemRepository struct {
+// InmemRepository inmemory implementation of account.Repository
+type InmemRepository struct {
 	mtx      sync.RWMutex
 	accounts map[account.Num]*account.Account
 }
 
 // NewInmemoryRepository returns implement of user repository interface
-func NewInmemoryRepository(accounts map[account.Num]*account.Account) account.Repository {
+func NewInmemoryRepository(accounts map[account.Num]*account.Account) *InmemRepository {
 	if accounts == nil {
 		accounts = make(map[account.Num]*account.Account)
 	}
 
-	return &inmemRepository{
+	return &InmemRepository{
 		accounts: accounts,
 	}
 }
-func (m *inmemRepository) ListAll(ctx context.Context) ([]*account.Account, error) {
+
+// ListAll returns all accounts
+func (m *InmemRepository) ListAll(ctx context.Context) ([]*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 	values := make([]*account.Account, 0, len(m.accounts))
@@ -50,7 +53,7 @@ func (m *inmemRepository) ListAll(ctx context.Context) ([]*account.Account, erro
 	return accounts, nil
 }
 
-func (m *inmemRepository) FindByID(ctx context.Context, num account.Num) (*account.Account, error) {
+func (m *InmemRepository) FindByID(ctx context.Context, num account.Num) (*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -61,7 +64,7 @@ func (m *inmemRepository) FindByID(ctx context.Context, num account.Num) (*accou
 	return nil, fmt.Errorf("Account number %s not found", num)
 }
 
-func (m *inmemRepository) TransferMoney(ctx context.Context, userOrigin, userDestination string, amount int64) error {
+func (m *InmemRepository) TransferMoney(ctx context.Context, userOrigin, userDestination string, amount int64) error {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -91,7 +94,7 @@ func (m *inmemRepository) TransferMoney(ctx context.Context, userOrigin, userDes
 	return nil
 }
 
-func (m *inmemRepository) FindByUserID(ctx context.Context, userID string) (*account.Account, error) {
+func (m *InmemRepository) FindByUserID(ctx context.Context, userID string) (*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -104,7 +107,7 @@ func (m *inmemRepository) FindByUserID(ctx context.Context, userID string) (*acc
 	return nil, fmt.Errorf("The User ID %s doesn't have any account", userID)
 }
 
-func (m *inmemRepository) GetBalance(ctx context.Context, num account.Num) (int64, error) {
+func (m *InmemRepository) GetBalance(ctx context.Context, num account.Num) (int64, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -116,7 +119,7 @@ func (m *inmemRepository) GetBalance(ctx context.Context, num account.Num) (int6
 	return 0, fmt.Errorf("Cannot get balance, account number %s not found", num)
 }
 
-func (m *inmemRepository) UpdateBalance(ctx context.Context, num account.Num, amount int64) (*account.Account, error) {
+func (m *InmemRepository) UpdateBalance(ctx context.Context, num account.Num, amount int64) (*account.Account, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 

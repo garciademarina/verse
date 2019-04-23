@@ -8,23 +8,24 @@ import (
 	"github.com/garciademarina/verse/pkg/user"
 )
 
-type inmemRepository struct {
+// InmemRepository inmemory implementation of user.Repository
+type InmemRepository struct {
 	mtx   sync.RWMutex
 	users map[user.ID]*user.User
 }
 
 // NewInmemoryRepository returns implement of user repository interface
-func NewInmemoryRepository(users map[user.ID]*user.User) user.Repository {
+func NewInmemoryRepository(users map[user.ID]*user.User) *InmemRepository {
 	if users == nil {
 		users = make(map[user.ID]*user.User)
 	}
 
-	return &inmemRepository{
+	return &InmemRepository{
 		users: users,
 	}
 }
 
-func (m *inmemRepository) ListAll(ctx context.Context) ([]*user.User, error) {
+func (m *InmemRepository) ListAll(ctx context.Context) ([]*user.User, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 	values := make([]*user.User, 0, len(m.users))
@@ -34,7 +35,7 @@ func (m *inmemRepository) ListAll(ctx context.Context) ([]*user.User, error) {
 	return values, nil
 }
 
-func (m *inmemRepository) FindById(ctx context.Context, id user.ID) (*user.User, error) {
+func (m *InmemRepository) FindById(ctx context.Context, id user.ID) (*user.User, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
